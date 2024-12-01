@@ -22,7 +22,7 @@
         .input-boxes {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: center;  /* Center the items horizontally */
             margin-bottom: 10px;
         }
         .input-box {
@@ -30,12 +30,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 300px;
+            width: 300px;  /* Set a fixed width to ensure consistency */
         }
         .input-box input {
             margin-right: 10px;
-            width: 100%;
-            max-width: 200px;
+            width: 100%;  /* Ensure the input field stretches to take up the available space */
+            max-width: 200px;  /* Limit max width to avoid overly wide inputs */
         }
         button {
             margin: 5px;
@@ -46,15 +46,16 @@
 
         /* Modal styles */
         .modal {
-            display: none;
+            display: none; /* Hidden by default */
             position: fixed;
-            z-index: 1;
+            z-index: 1; /* Sit on top */
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             padding-top: 60px;
         }
 
@@ -119,7 +120,7 @@
             <h2>Secret Santa Results</h2>
             <div id="output"></div>
             <div class="share-button-container" id="shareLinkContainer">
-                <button id="shareLinkButton">Share the Secret Santa Link</button>
+                <button id="shareLinkButton">Share Secret Santa Results</button>
             </div>
         </div>
     </div>
@@ -199,16 +200,14 @@
                 outputDiv.appendChild(container);
             });
 
-            // Store the result in localStorage with a unique result ID
+            // Store the result in localStorage
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
-            // Generate the shareable link with the result ID
+            // Show the share link button
             const link = `${window.location.origin}${window.location.pathname}?id=${resultId}`;
-
-            // Handle the click of the "Share the Secret Santa Link" button
             document.getElementById("shareLinkButton").onclick = () => {
-                // Copy the shareable link to the clipboard
+                // Show the shareable link or copy to clipboard
                 navigator.clipboard.writeText(link).then(() => {
                     alert(`Link copied to clipboard: ${link}`);
                 }).catch(err => {
@@ -216,7 +215,7 @@
                 });
             };
 
-            // Show the modal with the Secret Santa results
+            // Show the modal
             document.getElementById("secretSantaModal").style.display = "block";
         }
 
@@ -243,46 +242,13 @@
                 <div class="input-box"><input type="text" class="name-input" value="김지수" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
                 <div class="input-box"><input type="text" class="name-input" value="탁은진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
                 <div class="input-box"><input type="text" class="name-input" value="노예진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>`;
+            document.getElementById("output").innerHTML = "";
+            document.getElementById("secretSantaModal").style.display = "none";
         }
 
         function closeModal() {
             document.getElementById("secretSantaModal").style.display = "none";
         }
-
-        function checkURL() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get("id");
-            if (id) {
-                const pairs = JSON.parse(localStorage.getItem(id) || "[]");
-                if (pairs.length > 0) {
-                    const outputDiv = document.getElementById("output");
-                    pairs.forEach(pair => {
-                        const container = document.createElement("div");
-                        container.classList.add("result");
-
-                        const revealButton = document.createElement("button");
-                        revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                        const hiddenMessage = document.createElement("div");
-                        hiddenMessage.classList.add("hidden-message");
-                        hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                        revealButton.onclick = () => {
-                            hiddenMessage.style.display = "block";
-                            revealButton.disabled = true;
-                        };
-
-                        container.appendChild(revealButton);
-                        container.appendChild(hiddenMessage);
-                        outputDiv.appendChild(container);
-                    });
-                } else {
-                    alert("Invalid or expired link.");
-                }
-            }
-        }
-
-        // Check URL on page load for shared Secret Santa link
-        window.onload = checkURL;
     </script>
 </body>
 </html>
