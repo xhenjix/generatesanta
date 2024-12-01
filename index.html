@@ -11,25 +11,19 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: flex-start; /* Align to the top */
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            padding-top: 20px; /* Add some padding at the top */
+            padding-top: 20px;
         }
         #output {
             margin-top: 20px;
         }
-        .hidden-message {
-            display: none;
-            color: green;
-            font-weight: bold;
-            margin-top: 5px;
-        }
         .input-boxes {
             display: flex;
             flex-direction: column;
-            align-items: center;  /* Center the items horizontally */
+            align-items: center;
             margin-bottom: 10px;
         }
         .input-box {
@@ -37,58 +31,18 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 300px;  /* Set a fixed width to ensure consistency */
+            width: 300px;
         }
         .input-box input {
             margin-right: 10px;
-            width: 100%;  /* Ensure the input field stretches to take up the available space */
-            max-width: 200px;  /* Limit max width to avoid overly wide inputs */
+            width: 100%;
+            max-width: 200px;
         }
         button {
             margin: 5px;
         }
         .share-button-container {
             margin-top: 10px;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed;
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 5% auto; /* Centers the modal content */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-            box-sizing: border-box; /* Ensures padding is inside the modal content */
-            border-radius: 8px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
         }
     </style>
 </head>
@@ -117,39 +71,11 @@
             <button onclick="clearName(this)">Clear</button>
         </div>
     </div>
-    <button onclick="addNameBox()">Add Name</button>
-    <button onclick="deleteNameBox()">Delete Name</button><br><br>
     <button onclick="generateSecretSanta()">Generate</button>
 
-    <!-- Modal -->
-    <div id="secretSantaModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Secret Santa Results</h2>
-            <div id="output"></div>
-            <div class="share-button-container" id="shareLinkContainer">
-                <button id="shareLinkButton">Share Results</button>
-            </div>
-        </div>
-    </div>
+    <div id="output"></div>
 
     <script>
-        function addNameBox() {
-            const inputBoxContainer = document.getElementById("inputNames");
-            const newInputBox = document.createElement("div");
-            newInputBox.classList.add("input-box");
-            newInputBox.innerHTML = `<input type="text" class="name-input" placeholder="Enter name"><button onclick="clearName(this)">Clear</button>`;
-            inputBoxContainer.appendChild(newInputBox);
-        }
-
-        function deleteNameBox() {
-            const inputBoxContainer = document.getElementById("inputNames");
-            const nameBoxes = inputBoxContainer.querySelectorAll(".input-box");
-            if (nameBoxes.length > 2) {  // Prevent removing all boxes
-                inputBoxContainer.removeChild(nameBoxes[nameBoxes.length - 1]);
-            }
-        }
-
         function clearName(button) {
             const inputBox = button.previousElementSibling;
             inputBox.value = '';  // Clear the name
@@ -175,56 +101,23 @@
                 shuffledNames = shuffleArray([...uniqueNames]);
             } while (shuffledNames.some((name, index) => name === uniqueNames[index]));
 
-            // Create the pairings while maintaining the original order of input names
             const pairs = [];
             for (let i = 0; i < uniqueNames.length; i++) {
-                const giver = uniqueNames[i];  // Keep the original order of names
-                const receiver = shuffledNames[i];  // Pair with the shuffled names
+                const giver = uniqueNames[i];
+                const receiver = shuffledNames[i];
                 pairs.push({ giver, receiver });
             }
-
-            // Clear previous output
-            const outputDiv = document.getElementById("output");
-            outputDiv.innerHTML = "";
-
-            // Display hidden pairs
-            pairs.forEach(pair => {
-                const container = document.createElement("div");
-                container.classList.add("result");
-
-                const revealButton = document.createElement("button");
-                revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                const hiddenMessage = document.createElement("div");
-                hiddenMessage.classList.add("hidden-message");
-                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                revealButton.onclick = () => {
-                    hiddenMessage.style.display = "block";
-                    revealButton.disabled = true; // Disable reveal button after click
-                };
-
-                container.appendChild(revealButton);
-                container.appendChild(hiddenMessage);
-                outputDiv.appendChild(container);
-            });
 
             // Store the result in localStorage
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
-            // Show the share link button
-            const link = `${window.location.origin}/result.html?id=${resultId}`;
-            document.getElementById("shareLinkButton").onclick = () => {
-                // Show the shareable link or copy to clipboard
-                navigator.clipboard.writeText(link).then(() => {
-                    alert(`Link copied to clipboard: ${link}`);
-                }).catch(err => {
-                    alert("Failed to copy link.");
-                });
-            };
+            // Generate the shareable link with the correct path
+            const link = `https://xhenjix.github.io/generatesanta/results.html?id=${resultId}`;
 
-            // Show the modal
-            document.getElementById("secretSantaModal").style.display = "block";
+            // Show the generated link
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = `<p>Share this link to view the results:</p><a href="${link}" target="_blank">${link}</a>`;
         }
 
         // Helper function to shuffle the names array
@@ -241,10 +134,6 @@
                 const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
             });
-        }
-
-        function closeModal() {
-            document.getElementById("secretSantaModal").style.display = "none";
         }
     </script>
 </body>
