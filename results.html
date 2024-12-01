@@ -58,6 +58,10 @@
             margin-top: 10px;
             font-size: 18px;
             color: #333;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
         }
         .share-button-container {
             margin-top: 20px;
@@ -110,10 +114,13 @@
                     const button = document.createElement("button");
                     button.innerHTML = `Show gift for ${pair.giver}`;
                     button.onclick = function() {
+                        // Create a reveal text div below the button
                         const revealDiv = document.createElement("div");
                         revealDiv.classList.add("reveal-text");
                         revealDiv.innerHTML = `${pair.giver} gives a gift to ${pair.receiver}`;
-                        button.parentNode.appendChild(revealDiv);  // Append the result below the button
+                        
+                        // Insert the reveal text directly after the button
+                        button.parentNode.insertBefore(revealDiv, button.nextSibling);
                         button.disabled = true;  // Disable the button after click
                     };
                     nameButtonsContainer.appendChild(button);
