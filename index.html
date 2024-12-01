@@ -35,6 +35,13 @@
             margin: 5px;
             cursor: pointer;
         }
+        /* Styling for the Add and Delete Name buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
         #secretSantaModal {
             display: none;
             position: fixed;
@@ -90,8 +97,12 @@
             <button onclick="clearName(this)">Clear</button>
         </div>
     </div>
-    <button onclick="addNameBox()">Add Name</button>
-    <button onclick="deleteNameBox()">Delete Name</button><br><br>
+
+    <div class="button-container">
+        <button onclick="addNameBox()">Add Name</button>
+        <button onclick="deleteNameBox()">Delete Name</button>
+    </div><br><br>
+
     <button onclick="generateSecretSanta()">Generate</button>
 
     <div id="secretSantaModal">
