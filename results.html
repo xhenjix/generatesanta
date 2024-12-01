@@ -8,63 +8,38 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            height: 100vh;
-            flex-direction: column;
-            padding-top: 20px;
+            padding: 20px;
         }
-        #output {
+        .result-container {
             margin-top: 20px;
-        }
-        .result {
-            margin-top: 20px;
-        }
-        .hidden-message {
-            display: none;
-            color: green;
-            font-weight: bold;
-            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Secret Santa Results</h1>
-    <div id="output"></div>
+    <div id="results" class="result-container"></div>
 
     <script>
-        // Get the ID from the URL query parameter
+        // Fetch the 'id' parameter from the URL
         const urlParams = new URLSearchParams(window.location.search);
         const resultId = urlParams.get('id');
 
-        // Retrieve the results from localStorage using the ID
-        const resultData = localStorage.getItem(resultId);
-
-        if (resultData) {
-            const pairs = JSON.parse(resultData);
-            const outputDiv = document.getElementById("output");
-
-            pairs.forEach(pair => {
-                const container = document.createElement("div");
-                container.classList.add("result");
-
-                const hiddenMessage = document.createElement("div");
-                hiddenMessage.classList.add("hidden-message");
-                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                container.appendChild(hiddenMessage);
-                outputDiv.appendChild(container);
-
-                // Show the result after a slight delay for each user
-                setTimeout(() => {
-                    hiddenMessage.style.display = "block";
-                }, 500); // You can adjust the delay if needed
-            });
+        if (!resultId) {
+            document.getElementById('results').innerHTML = 'No results found.';
         } else {
-            document.getElementById("output").innerHTML = "<p>No results found. Invalid or expired link.</p>";
+            // Retrieve the Secret Santa results from localStorage using the ID
+            const results = JSON.parse(localStorage.getItem(resultId));
+
+            if (results) {
+                let output = '<ul>';
+                results.forEach(pair => {
+                    output += `<li>${pair.giver} -> ${pair.receiver}</li>`;
+                });
+                output += '</ul>';
+                document.getElementById('results').innerHTML = output;
+            } else {
+                document.getElementById('results').innerHTML = 'Results not found or expired.';
+            }
         }
     </script>
 </body>
