@@ -36,9 +36,12 @@
         }
         .name-button-container {
             margin-top: 20px;
+            display: flex;
+            flex-direction: column; /* Stack the buttons vertically */
+            align-items: center; /* Center the buttons */
         }
         .name-button-container button {
-            margin: 5px;
+            margin: 10px 0;
             padding: 10px;
             font-size: 16px;
             cursor: pointer;
@@ -46,6 +49,7 @@
             background-color: #4CAF50;
             color: white;
             border-radius: 5px;
+            width: 200px; /* Set a fixed width for buttons */
         }
         .name-button-container button:hover {
             background-color: #45a049;
