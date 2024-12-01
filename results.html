@@ -32,6 +32,7 @@
         #output {
             font-size: 16px;
             margin-bottom: 20px;
+            display: none;  /* Initially hide the results */
         }
         ul {
             list-style-type: none;
@@ -44,7 +45,7 @@
             padding: 5px;
         }
         .share-button-container {
-            margin-top: 10px;
+            margin-top: 20px;
         }
         button {
             padding: 10px 20px;
@@ -64,6 +65,7 @@
 
     <div class="content">
         <h1>Secret Santa Results</h1>
+        <button id="showResultsButton">Show Results</button>
         <div id="output">Loading results...</div>
         <div class="share-button-container">
             <button id="shareLinkButton">Copy Link</button>
@@ -77,10 +79,10 @@
 
         if (resultId) {
             const resultData = localStorage.getItem(resultId);
+            const outputDiv = document.getElementById("output");
+
             if (resultData) {
                 const pairs = JSON.parse(resultData);
-
-                const outputDiv = document.getElementById("output");
                 outputDiv.innerHTML = "<ul>";
 
                 pairs.forEach(pair => {
@@ -89,9 +91,15 @@
 
                 outputDiv.innerHTML += "</ul>";
             } else {
-                document.getElementById("output").textContent = "No results found for this link.";
+                outputDiv.textContent = "No results found for this link.";
             }
         }
+
+        // Show results when the button is clicked
+        document.getElementById("showResultsButton").onclick = function() {
+            const outputDiv = document.getElementById("output");
+            outputDiv.style.display = "block";  // Show results
+        };
 
         // Share link button functionality
         document.getElementById("shareLinkButton").onclick = function() {
