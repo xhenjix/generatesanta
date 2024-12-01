@@ -151,8 +151,8 @@
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
-            // Create a simplified shareable link
-            const link = `./results.html?id=${resultId}`;
+            // Generate the full URL for the shareable link
+            const link = `https://xhenjix.github.io/generatesanta/results.html?id=${resultId}`;
 
             document.getElementById("shareLinkButton").onclick = () => {
                 navigator.clipboard.writeText(link).then(() => {
