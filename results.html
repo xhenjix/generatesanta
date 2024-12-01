@@ -11,79 +11,57 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: flex-start; /* Align to the top */
+            justify-content: center;
             align-items: center;
-            height: 100vh;
             flex-direction: column;
-            padding-top: 20px;
-        }
-        #output {
-            margin-top: 20px;
+            height: 100vh;
         }
         .hidden-message {
             display: none;
-            color: green;
+            margin-top: 10px;
             font-weight: bold;
-            margin-top: 5px;
+            color: green;
         }
         .result {
-            margin-bottom: 15px;
-        }
-        .reveal-button {
-            margin-top: 5px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Secret Santa Results</h1>
-    <div id="output"></div>
+    <div id="output">Loading results...</div>
 
     <script>
-        // Function to get the value of a URL parameter
-        function getQueryParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
-        }
+        const encodedData = new URLSearchParams(window.location.search).get('data');
 
-        // Retrieve the Secret Santa result ID from the URL
-        const resultId = getQueryParameter('id');
+        if (encodedData) {
+            const pairs = JSON.parse(decodeURIComponent(encodedData));
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = '';
 
-        if (resultId) {
-            // Get the stored results from localStorage using the resultId
-            const results = localStorage.getItem(resultId);
+            pairs.forEach(pair => {
+                const container = document.createElement("div");
+                container.classList.add("result");
 
-            if (results) {
-                const pairs = JSON.parse(results);
-                const outputDiv = document.getElementById('output');
-                outputDiv.innerHTML = ''; // Clear any previous content
+                const revealButton = document.createElement("button");
+                revealButton.textContent = `Reveal Result for ${pair.giver}`;
+                revealButton.classList.add("reveal-button");
 
-                // Display the pairs
-                pairs.forEach(pair => {
-                    const container = document.createElement("div");
-                    container.classList.add("result");
+                const hiddenMessage = document.createElement("div");
+                hiddenMessage.classList.add("hidden-message");
+                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
 
-                    const revealButton = document.createElement("button");
-                    revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                    revealButton.classList.add("reveal-button");
-                    
-                    const hiddenMessage = document.createElement("div");
-                    hiddenMessage.classList.add("hidden-message");
-                    hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
+                revealButton.onclick = () => {
+                    hiddenMessage.style.display = "block";
+                    revealButton.disabled = true;
+                };
 
-                    revealButton.onclick = () => {
-                        hiddenMessage.style.display = "block";
-                        revealButton.disabled = true; // Disable reveal button after click
-                    };
-
-                    container.appendChild(revealButton);
-                    container.appendChild(hiddenMessage);
-                    outputDiv.appendChild(container);
-                });
-            } else {
-                document.getElementById('output').innerText = "No results found. Please check the link.";
-            }
+                container.appendChild(revealButton);
+                container.appendChild(hiddenMessage);
+                outputDiv.appendChild(container);
+            });
         } else {
-            document.getElementById('output').innerText = "No ID parameter found in the URL.";
+            document.getElementById('output').innerText = "No results found. Please check the link.";
         }
     </script>
 </body>
