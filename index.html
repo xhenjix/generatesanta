@@ -270,8 +270,8 @@
             const pairs = JSON.parse(localStorage.getItem(id));
             if (!pairs) return;
 
-            const outputDiv = document.getElementById("output");
-            outputDiv.innerHTML = "";
+            const outputDiv = document.createElement("div");
+            outputDiv.classList.add("result");
 
             pairs.forEach(pair => {
                 const container = document.createElement("div");
@@ -292,6 +292,13 @@
                 container.appendChild(hiddenMessage);
                 outputDiv.appendChild(container);
             });
+
+            // Open results in a new window
+            const popupWindow = window.open('', '', 'width=600,height=400');
+            popupWindow.document.write('<html><head><title>Secret Santa Results</title></head><body>');
+            popupWindow.document.write(outputDiv.outerHTML);
+            popupWindow.document.write('</body></html>');
+            popupWindow.document.close();
         }
 
         function resetForm() {
