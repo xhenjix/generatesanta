@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa Results</title>
+    <style>
+        /* You can include the same styles or adjust them as needed */
+    </style>
+</head>
+<body>
+    <h1>Secret Santa Results</h1>
+    <div id="output"></div>
+
+    <script>
+        // Get the 'id' parameter from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const resultId = urlParams.get('id');
+
+        if (resultId) {
+            // Retrieve the results from localStorage using the 'id'
+            const pairs = JSON.parse(localStorage.getItem(resultId));
+
+            if (pairs) {
+                const outputDiv = document.getElementById("output");
+                pairs.forEach(pair => {
+                    const container = document.createElement("div");
+                    container.classList.add("result");
+
+                    const hiddenMessage = document.createElement("div");
+                    hiddenMessage.classList.add("hidden-message");
+                    hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
+
+                    container.appendChild(hiddenMessage);
+                    outputDiv.appendChild(container);
+                });
+            } else {
+                alert("No results found.");
+            }
+        } else {
+            alert("No ID provided in the URL.");
+        }
+    </script>
+</body>
+</html>
