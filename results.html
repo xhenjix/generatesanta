@@ -32,17 +32,28 @@
         #output {
             font-size: 16px;
             margin-bottom: 20px;
-            display: none;  /* Initially hide the results */
+            display: none;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-            text-align: left;
-            margin: 0;
+        .name-button-container {
+            margin-top: 20px;
         }
-        li {
+        .name-button-container button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+        .name-button-container button:hover {
+            background-color: #45a049;
+        }
+        .reveal-text {
+            margin-top: 10px;
             font-size: 18px;
-            padding: 5px;
+            color: #333;
         }
         .share-button-container {
             margin-top: 20px;
@@ -65,8 +76,10 @@
 
     <div class="content">
         <h1>Secret Santa Results</h1>
-        <button id="showResultsButton">Show Results</button>
         <div id="output">Loading results...</div>
+
+        <div class="name-button-container" id="nameButtons"></div>
+
         <div class="share-button-container">
             <button id="shareLinkButton">Copy Link</button>
         </div>
@@ -80,26 +93,31 @@
         if (resultId) {
             const resultData = localStorage.getItem(resultId);
             const outputDiv = document.getElementById("output");
+            const nameButtonsContainer = document.getElementById("nameButtons");
 
             if (resultData) {
                 const pairs = JSON.parse(resultData);
-                outputDiv.innerHTML = "<ul>";
+                
+                // Hide the loading text and show the results container
+                outputDiv.style.display = "none";
 
+                // Create a button for each person
                 pairs.forEach(pair => {
-                    outputDiv.innerHTML += `<li><strong>${pair.giver}</strong> gives a gift to <strong>${pair.receiver}</strong></li>`;
+                    const button = document.createElement("button");
+                    button.innerHTML = `Show gift for ${pair.giver}`;
+                    button.onclick = function() {
+                        const revealDiv = document.createElement("div");
+                        revealDiv.classList.add("reveal-text");
+                        revealDiv.innerHTML = `${pair.giver} gives a gift to ${pair.receiver}`;
+                        button.parentNode.appendChild(revealDiv);  // Append the result below the button
+                        button.disabled = true;  // Disable the button after click
+                    };
+                    nameButtonsContainer.appendChild(button);
                 });
-
-                outputDiv.innerHTML += "</ul>";
             } else {
                 outputDiv.textContent = "No results found for this link.";
             }
         }
-
-        // Show results when the button is clicked
-        document.getElementById("showResultsButton").onclick = function() {
-            const outputDiv = document.getElementById("output");
-            outputDiv.style.display = "block";  // Show results
-        };
 
         // Share link button functionality
         document.getElementById("shareLinkButton").onclick = function() {
