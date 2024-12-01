@@ -19,7 +19,6 @@
         }
         #output {
             margin-top: 20px;
-            text-align: left;
         }
         .hidden-message {
             display: none;
@@ -69,11 +68,13 @@
 
         .modal-content {
             background-color: white;
-            margin: 5% auto;
+            margin: 5% auto; /* Centers the modal content */
             padding: 20px;
             border: 1px solid #888;
             width: 80%;
             max-width: 500px;
+            box-sizing: border-box; /* Ensures padding is inside the modal content */
+            border-radius: 8px;
         }
 
         .close {
@@ -212,7 +213,7 @@
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
             // Show the share link button
-            const link = `${window.location.origin}/generatesanta/results.html?id=${resultId}`;
+            const link = `${window.location.origin}/result.html?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
                 // Show the shareable link or copy to clipboard
                 navigator.clipboard.writeText(link).then(() => {
