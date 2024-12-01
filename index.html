@@ -212,7 +212,7 @@
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
             // Show the share link button
-            const link = `${window.location.origin}${window.location.pathname}?id=${resultId}`;
+            const link = `${window.location.origin}/result.html?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
                 // Show the shareable link or copy to clipboard
                 navigator.clipboard.writeText(link).then(() => {
@@ -250,6 +250,8 @@
                 <div class="input-box"><input type="text" class="name-input" value="탁은진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
                 <div class="input-box"><input type="text" class="name-input" value="노예진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
             `;
+            document.getElementById("output").innerHTML = "";
+            document.getElementById("secretSantaModal").style.display = "none";
         }
 
         function closeModal() {
