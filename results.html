@@ -9,47 +9,63 @@
             font-family: Arial, sans-serif;
             text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            padding-top: 20px;
         }
-        #resultOutput {
+        #output {
             margin-top: 20px;
+        }
+        .result {
+            margin-top: 20px;
+        }
+        .hidden-message {
+            display: none;
+            color: green;
+            font-weight: bold;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
     <h1>Secret Santa Results</h1>
-    <div id="resultOutput"></div>
+    <div id="output"></div>
 
     <script>
-        function displayResults() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const resultId = urlParams.get('id');
+        // Get the ID from the URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const resultId = urlParams.get('id');
 
-            if (!resultId) {
-                alert("No result ID found in the URL.");
-                return;
-            }
+        // Retrieve the results from localStorage using the ID
+        const resultData = localStorage.getItem(resultId);
 
-            // Retrieve the result from localStorage
-            const result = localStorage.getItem(resultId);
+        if (resultData) {
+            const pairs = JSON.parse(resultData);
+            const outputDiv = document.getElementById("output");
 
-            if (!result) {
-                alert("No Secret Santa result found for this ID.");
-                return;
-            }
-
-            const pairs = JSON.parse(result);
-
-            const resultOutput = document.getElementById('resultOutput');
             pairs.forEach(pair => {
-                const pairDiv = document.createElement('div');
-                pairDiv.innerHTML = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-                resultOutput.appendChild(pairDiv);
-            });
-        }
+                const container = document.createElement("div");
+                container.classList.add("result");
 
-        // Call displayResults on page load
-        window.onload = displayResults;
+                const hiddenMessage = document.createElement("div");
+                hiddenMessage.classList.add("hidden-message");
+                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
+
+                container.appendChild(hiddenMessage);
+                outputDiv.appendChild(container);
+
+                // Show the result after a slight delay for each user
+                setTimeout(() => {
+                    hiddenMessage.style.display = "block";
+                }, 500); // You can adjust the delay if needed
+            });
+        } else {
+            document.getElementById("output").innerHTML = "<p>No results found. Invalid or expired link.</p>";
+        }
     </script>
 </body>
 </html>
