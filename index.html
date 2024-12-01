@@ -257,21 +257,15 @@
                 const container = document.createElement("div");
                 container.classList.add("result");
 
-                const revealButton = document.createElement("button");
-                revealButton.textContent = `Reveal Result for ${pair.giver}`;
                 const hiddenMessage = document.createElement("div");
                 hiddenMessage.classList.add("hidden-message");
                 hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
 
-                revealButton.onclick = () => {
-                    hiddenMessage.style.display = "block";
-                    revealButton.disabled = true;
-                };
-
-                container.appendChild(revealButton);
                 container.appendChild(hiddenMessage);
                 outputDiv.appendChild(container);
             });
+
+            document.getElementById("secretSantaModal").style.display = "block";
         }
 
         function openShareModal(link) {
