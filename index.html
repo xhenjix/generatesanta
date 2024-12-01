@@ -11,11 +11,11 @@
             margin: 0;
             padding: 0;
             display: flex;
-            justify-content: flex-start; /* Align to the top */
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            padding-top: 20px; /* Add some padding at the top */
+            padding-top: 20px;
         }
         #output {
             margin-top: 20px;
@@ -29,7 +29,7 @@
         .input-boxes {
             display: flex;
             flex-direction: column;
-            align-items: center;  /* Center the items horizontally */
+            align-items: center;
             margin-bottom: 10px;
         }
         .input-box {
@@ -37,12 +37,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 300px;  /* Set a fixed width to ensure consistency */
+            width: 300px;
         }
         .input-box input {
             margin-right: 10px;
-            width: 100%;  /* Ensure the input field stretches to take up the available space */
-            max-width: 200px;  /* Limit max width to avoid overly wide inputs */
+            width: 100%;
+            max-width: 200px;
         }
         button {
             margin: 5px;
@@ -50,22 +50,18 @@
         .share-button-container {
             margin-top: 10px;
         }
-
-        /* Modal styles */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
-            z-index: 1; /* Sit on top */
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            background-color: rgba(0,0,0,0.4);
             padding-top: 60px;
         }
-
         .modal-content {
             background-color: white;
             margin: 5% auto;
@@ -74,14 +70,12 @@
             width: 80%;
             max-width: 500px;
         }
-
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
-
         .close:hover,
         .close:focus {
             color: black;
@@ -92,7 +86,6 @@
 </head>
 <body>
     <h1>Secret Santa Generator</h1>
-    
     <div id="inputNames" class="input-boxes">
         <div class="input-box">
             <input type="text" class="name-input" value="권혜진" placeholder="Enter name">
@@ -120,7 +113,6 @@
     <button onclick="generateSecretSanta()">Generate</button>
     <button onclick="resetForm()">Reset</button>
 
-    <!-- Modal -->
     <div id="secretSantaModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -144,14 +136,14 @@
         function deleteNameBox() {
             const inputBoxContainer = document.getElementById("inputNames");
             const nameBoxes = inputBoxContainer.querySelectorAll(".input-box");
-            if (nameBoxes.length > 2) {  // Prevent removing all boxes
+            if (nameBoxes.length > 2) {
                 inputBoxContainer.removeChild(nameBoxes[nameBoxes.length - 1]);
             }
         }
 
         function clearName(button) {
             const inputBox = button.previousElementSibling;
-            inputBox.value = '';  // Clear the name
+            inputBox.value = '';
         }
 
         function generateSecretSanta() {
@@ -169,85 +161,43 @@
 
             let shuffledNames;
 
-            // Ensure no one is paired with themselves
             do {
                 shuffledNames = shuffleArray([...uniqueNames]);
             } while (shuffledNames.some((name, index) => name === uniqueNames[index]));
 
-            // Create the pairings while maintaining the original order of input names
-            const pairs = [];
-            for (let i = 0; i < uniqueNames.length; i++) {
-                const giver = uniqueNames[i];  // Keep the original order of names
-                const receiver = shuffledNames[i];  // Pair with the shuffled names
-                pairs.push({ giver, receiver });
-            }
+            const pairs = uniqueNames.map((giver, index) => ({
+                giver,
+                receiver: shuffledNames[index],
+            }));
 
-            // Clear previous output
-            const outputDiv = document.getElementById("output");
-            outputDiv.innerHTML = "";
+            const encodedResults = encodeURIComponent(JSON.stringify(pairs));
+            const link = `${window.location.origin}/generatesanta/results.html?data=${encodedResults}`;
 
-            // Display hidden pairs
-            pairs.forEach(pair => {
-                const container = document.createElement("div");
-                container.classList.add("result");
-
-                const revealButton = document.createElement("button");
-                revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                const hiddenMessage = document.createElement("div");
-                hiddenMessage.classList.add("hidden-message");
-                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                revealButton.onclick = () => {
-                    hiddenMessage.style.display = "block";
-                    revealButton.disabled = true; // Disable reveal button after click
-                };
-
-                container.appendChild(revealButton);
-                container.appendChild(hiddenMessage);
-                outputDiv.appendChild(container);
-            });
-
-            // Store the result in localStorage
-            const resultId = generateUUID();
-            localStorage.setItem(resultId, JSON.stringify(pairs));
-
-            // Show the share link button with the correct path
-            const link = `${window.location.origin}/generatesanta/results.html?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
-                // Show the shareable link or copy to clipboard
                 navigator.clipboard.writeText(link).then(() => {
                     alert(`Link copied to clipboard: ${link}`);
-                }).catch(err => {
+                }).catch(() => {
                     alert("Failed to copy link.");
                 });
             };
 
-            // Show the modal
             document.getElementById("secretSantaModal").style.display = "block";
         }
 
-        // Helper function to shuffle the names array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+                [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
         }
 
-        function generateUUID() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
-
         function resetForm() {
-            document.getElementById("inputNames").innerHTML = `\
-                <div class="input-box"><input type="text" class="name-input" value="권혜진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
-                <div class="input-box"><input type="text" class="name-input" value="오상훈" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
-                <div class="input-box"><input type="text" class="name-input" value="김지수" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
-                <div class="input-box"><input type="text" class="name-input" value="탁은진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>\
+            document.getElementById("inputNames").innerHTML = `
+                <div class="input-box"><input type="text" class="name-input" value="권혜진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
+                <div class="input-box"><input type="text" class="name-input" value="오상훈" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
+                <div class="input-box"><input type="text" class="name-input" value="김지수" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
+                <div class="input-box"><input type="text" class="name-input" value="탁은진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
                 <div class="input-box"><input type="text" class="name-input" value="노예진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
             `;
             document.getElementById("output").innerHTML = "";
