@@ -7,46 +7,35 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            text-align: center;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .input-boxes {
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            margin-bottom: 10px;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .input-boxes, #output {
+            margin: 10px 0;
         }
         .input-box {
             margin-bottom: 5px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            max-width: 300px;
         }
         .input-box input {
             margin-right: 10px;
-            width: 100%;
-            max-width: 200px;
+            padding: 5px;
+            width: 200px;
         }
         button {
+            padding: 5px 10px;
             margin: 5px;
+            cursor: pointer;
         }
-        #output {
-            margin-top: 20px;
-        }
-        .modal {
+        #secretSantaModal {
             display: none;
             position: fixed;
             z-index: 1;
@@ -60,66 +49,57 @@
             align-items: center;
         }
         .modal-content {
-            background-color: white;
+            background: white;
             padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
+            border-radius: 5px;
             text-align: center;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .close {
-            color: #aaa;
             float: right;
-            font-size: 28px;
-            font-weight: bold;
             cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
         }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
+        .close:hover {
+            color: red;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Secret Santa Generator</h1>
-        <div id="inputNames" class="input-boxes">
-            <div class="input-box">
-                <input type="text" class="name-input" value="권혜진" placeholder="Enter name">
-                <button onclick="clearName(this)">Clear</button>
-            </div>
-            <div class="input-box">
-                <input type="text" class="name-input" value="오상훈" placeholder="Enter name">
-                <button onclick="clearName(this)">Clear</button>
-            </div>
-            <div class="input-box">
-                <input type="text" class="name-input" value="김지수" placeholder="Enter name">
-                <button onclick="clearName(this)">Clear</button>
-            </div>
-            <div class="input-box">
-                <input type="text" class="name-input" value="탁은진" placeholder="Enter name">
-                <button onclick="clearName(this)">Clear</button>
-            </div>
-            <div class="input-box">
-                <input type="text" class="name-input" value="노예진" placeholder="Enter name">
-                <button onclick="clearName(this)">Clear</button>
-            </div>
+    <h1>Secret Santa Generator</h1>
+    <div id="inputNames" class="input-boxes">
+        <div class="input-box">
+            <input type="text" class="name-input" value="권혜진" placeholder="Enter name">
+            <button onclick="clearName(this)">Clear</button>
         </div>
-        <button onclick="addNameBox()">Add Name</button>
-        <button onclick="deleteNameBox()">Delete Name</button><br><br>
-        <button onclick="generateSecretSanta()">Generate</button>
+        <div class="input-box">
+            <input type="text" class="name-input" value="오상훈" placeholder="Enter name">
+            <button onclick="clearName(this)">Clear</button>
+        </div>
+        <div class="input-box">
+            <input type="text" class="name-input" value="김지수" placeholder="Enter name">
+            <button onclick="clearName(this)">Clear</button>
+        </div>
+        <div class="input-box">
+            <input type="text" class="name-input" value="탁은진" placeholder="Enter name">
+            <button onclick="clearName(this)">Clear</button>
+        </div>
+        <div class="input-box">
+            <input type="text" class="name-input" value="노예진" placeholder="Enter name">
+            <button onclick="clearName(this)">Clear</button>
+        </div>
     </div>
+    <button onclick="addNameBox()">Add Name</button>
+    <button onclick="deleteNameBox()">Delete Name</button><br><br>
+    <button onclick="generateSecretSanta()">Generate</button>
 
-    <div id="secretSantaModal" class="modal">
+    <div id="secretSantaModal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2>Secret Santa Results</h2>
             <div id="output"></div>
-            <div class="share-button-container" id="shareLinkContainer">
-                <button id="shareLinkButton">Share Results</button>
-            </div>
+            <button id="shareLinkButton">Copy Link</button>
         </div>
     </div>
 
@@ -159,7 +139,6 @@
             }
 
             let shuffledNames;
-
             do {
                 shuffledNames = shuffleArray([...uniqueNames]);
             } while (shuffledNames.some((name, index) => name === uniqueNames[index]));
@@ -169,8 +148,9 @@
                 receiver: shuffledNames[index],
             }));
 
-            const encodedResults = encodeURIComponent(JSON.stringify(pairs));
-            const link = `${window.location.origin}/generatesanta/results.html?data=${encodedResults}`;
+            const resultId = generateUUID();
+            localStorage.setItem(resultId, JSON.stringify(pairs));
+            const link = `${window.location.origin}/generatesanta/results.html?id=${resultId}`;
 
             document.getElementById("shareLinkButton").onclick = () => {
                 navigator.clipboard.writeText(link).then(() => {
@@ -180,9 +160,12 @@
                 });
             };
 
-            const outputDiv = document.getElementById("output");
-            outputDiv.innerHTML = "Results refreshed! Copy and share the new link.";
+            document.getElementById("output").textContent = "Results generated! Copy and share the link.";
             document.getElementById("secretSantaModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("secretSantaModal").style.display = "none";
         }
 
         function shuffleArray(array) {
@@ -193,8 +176,11 @@
             return array;
         }
 
-        function closeModal() {
-            document.getElementById("secretSantaModal").style.display = "none";
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
         }
     </script>
 </body>
