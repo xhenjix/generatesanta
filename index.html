@@ -150,7 +150,9 @@
 
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
-            const link = `${window.location.origin}/generatesanta/results.html?id=${resultId}`;
+
+            // Create a simplified shareable link
+            const link = `./results.html?id=${resultId}`;
 
             document.getElementById("shareLinkButton").onclick = () => {
                 navigator.clipboard.writeText(link).then(() => {
