@@ -7,62 +7,95 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+
+        .content {
+            background-color: white;
             padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
         }
-        .result {
-            margin: 10px 0;
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        .hidden-message {
-            display: none;
-            margin-top: 5px;
+
+        #output {
+            font-size: 16px;
+            margin-bottom: 20px;
         }
+
+        .share-button-container {
+            margin-top: 10px;
+        }
+
         button {
-            padding: 5px 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
 <body>
-    <h1>Secret Santa Results</h1>
-    <div id="output"></div>
+
+    <div class="content">
+        <h1>Secret Santa Results</h1>
+        <div id="output">Loading results...</div>
+        <div class="share-button-container">
+            <button id="shareLinkButton">Copy Link</button>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const params = new URLSearchParams(window.location.search);
-            const resultId = params.get("id");
+        // Extract the resultId from the URL query parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const resultId = urlParams.get("id");
 
-            if (!resultId) {
-                document.body.innerHTML = "<h2>Invalid or missing result ID!</h2>";
-                return;
+        if (resultId) {
+            const resultData = localStorage.getItem(resultId);
+            if (resultData) {
+                const pairs = JSON.parse(resultData);
+
+                const outputDiv = document.getElementById("output");
+                outputDiv.innerHTML = "<ul>";
+
+                pairs.forEach(pair => {
+                    outputDiv.innerHTML += `<li><strong>${pair.giver}</strong> gives a gift to <strong>${pair.receiver}</strong></li>`;
+                });
+
+                outputDiv.innerHTML += "</ul>";
+            } else {
+                document.getElementById("output").textContent = "No results found for this link.";
             }
+        }
 
-            const pairs = JSON.parse(localStorage.getItem(resultId));
-
-            if (!pairs) {
-                document.body.innerHTML = "<h2>No results found for this ID!</h2>";
-                return;
-            }
-
-            const outputDiv = document.getElementById("output");
-            pairs.forEach(pair => {
-                const container = document.createElement("div");
-                container.classList.add("result");
-
-                const revealButton = document.createElement("button");
-                revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                const hiddenMessage = document.createElement("div");
-                hiddenMessage.classList.add("hidden-message");
-                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                revealButton.onclick = () => {
-                    hiddenMessage.style.display = "block";
-                    revealButton.disabled = true;
-                };
-
-                container.appendChild(revealButton);
-                container.appendChild(hiddenMessage);
-                outputDiv.appendChild(container);
+        // Share link button functionality
+        document.getElementById("shareLinkButton").onclick = function() {
+            const link = window.location.href;
+            navigator.clipboard.writeText(link).then(() => {
+                alert(`Link copied to clipboard: ${link}`);
+            }).catch(() => {
+                alert("Failed to copy link.");
             });
-        });
+        };
     </script>
 </body>
 </html>
