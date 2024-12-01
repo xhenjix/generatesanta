@@ -245,57 +245,53 @@
             });
         }
 
-        function showPreviousResults(id) {
-            const pairs = JSON.parse(localStorage.getItem(id));
-            if (pairs) {
-                const outputDiv = document.getElementById("output");
-                outputDiv.innerHTML = "";
-
-                pairs.forEach(pair => {
-                    const container = document.createElement("div");
-                    container.classList.add("result");
-
-                    const hiddenMessage = document.createElement("div");
-                    hiddenMessage.classList.add("hidden-message");
-                    hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                    container.appendChild(hiddenMessage);
-                    outputDiv.appendChild(container);
-                });
-            } else {
-                alert("No results found for this link!");
-            }
-        }
-
         function openShareModal(link) {
             document.getElementById("shareLinkInput").value = link;
             document.getElementById("shareModal").style.display = "block";
+        }
+
+        function copyLink() {
+            const linkInput = document.getElementById("shareLinkInput");
+            linkInput.select();
+            linkInput.setSelectionRange(0, 99999); // For mobile devices
+            document.execCommand("copy");
+            alert("Link copied to clipboard!");
+        }
+
+        function closeModal() {
+            document.getElementById("secretSantaModal").style.display = "none";
         }
 
         function closeShareModal() {
             document.getElementById("shareModal").style.display = "none";
         }
 
-        function copyLink() {
-            const copyText = document.getElementById("shareLinkInput");
-            copyText.select();
-            document.execCommand("copy");
-            alert("Link copied to clipboard!");
-        }
+        // Show previous results from localStorage
+        function showPreviousResults(id) {
+            const pairs = JSON.parse(localStorage.getItem(id));
+            if (!pairs) return;
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "";
 
-        function resetForm() {
-            document.getElementById("inputNames").innerHTML = `
-                <div class="input-box"><input type="text" class="name-input" value="권혜진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
-                <div class="input-box"><input type="text" class="name-input" value="오상훈" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
-                <div class="input-box"><input type="text" class="name-input" value="김지수" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
-                <div class="input-box"><input type="text" class="name-input" value="탁은진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>
-                <div class="input-box"><input type="text" class="name-input" value="노예진" placeholder="Enter name"><button onclick="clearName(this)">Clear</button></div>`;
-            document.getElementById("output").innerHTML = "";
-            document.getElementById("secretSantaModal").style.display = "none";
-        }
+            pairs.forEach(pair => {
+                const container = document.createElement("div");
+                container.classList.add("result");
 
-        function closeModal() {
-            document.getElementById("secretSantaModal").style.display = "none";
+                const revealButton = document.createElement("button");
+                revealButton.textContent = `Reveal Result for ${pair.giver}`;
+                const hiddenMessage = document.createElement("div");
+                hiddenMessage.classList.add("hidden-message");
+                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
+
+                revealButton.onclick = () => {
+                    hiddenMessage.style.display = "block";
+                    revealButton.disabled = true;
+                };
+
+                container.appendChild(revealButton);
+                container.appendChild(hiddenMessage);
+                outputDiv.appendChild(container);
+            });
         }
     </script>
 </body>
