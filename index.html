@@ -204,10 +204,10 @@
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
-            // Show the share link button
+            // Create the link to share the results
             const link = `${window.location.origin}${window.location.pathname}?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
-                // Show the shareable link or copy to clipboard
+                // Copy the shareable link to clipboard
                 navigator.clipboard.writeText(link).then(() => {
                     alert(`Link copied to clipboard: ${link}`);
                 }).catch(err => {
