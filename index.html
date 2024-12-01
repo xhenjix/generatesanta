@@ -22,7 +22,7 @@
         .input-boxes {
             display: flex;
             flex-direction: column;
-            align-items: center;  /* Center the items horizontally */
+            align-items: center;
             margin-bottom: 10px;
         }
         .input-box {
@@ -30,12 +30,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 300px;  /* Set a fixed width to ensure consistency */
+            width: 300px;
         }
         .input-box input {
             margin-right: 10px;
-            width: 100%;  /* Ensure the input field stretches to take up the available space */
-            max-width: 200px;  /* Limit max width to avoid overly wide inputs */
+            width: 100%;
+            max-width: 200px;
         }
         button {
             margin: 5px;
@@ -46,16 +46,15 @@
 
         /* Modal styles */
         .modal {
-            display: none; /* Hidden by default */
+            display: none;
             position: fixed;
-            z-index: 1; /* Sit on top */
+            z-index: 1;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            background-color: rgba(0,0,0,0.4);
             padding-top: 60px;
         }
 
@@ -80,6 +79,10 @@
             color: black;
             text-decoration: none;
             cursor: pointer;
+        }
+
+        #shareModal .modal-content {
+            width: 400px; /* Adjust the width of the share popup */
         }
     </style>
 </head>
@@ -113,7 +116,7 @@
     <button onclick="generateSecretSanta()">Generate</button>
     <button onclick="resetForm()">Reset</button>
 
-    <!-- Modal -->
+    <!-- Secret Santa Results Modal -->
     <div id="secretSantaModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -125,8 +128,18 @@
         </div>
     </div>
 
+    <!-- Share Modal -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeShareModal()">&times;</span>
+            <h2>Share Secret Santa Results</h2>
+            <p>Copy this link to share the Secret Santa results:</p>
+            <input type="text" id="shareLinkInput" readonly>
+            <button onclick="copyLink()">Copy Link</button>
+        </div>
+    </div>
+
     <script>
-        // Check if there is an 'id' query parameter in the URL and show the results
         const urlParams = new URLSearchParams(window.location.search);
         const resultId = urlParams.get('id');
         if (resultId) {
@@ -144,14 +157,14 @@
         function deleteNameBox() {
             const inputBoxContainer = document.getElementById("inputNames");
             const nameBoxes = inputBoxContainer.querySelectorAll(".input-box");
-            if (nameBoxes.length > 2) {  // Prevent removing all boxes
+            if (nameBoxes.length > 2) {
                 inputBoxContainer.removeChild(nameBoxes[nameBoxes.length - 1]);
             }
         }
 
         function clearName(button) {
             const inputBox = button.previousElementSibling;
-            inputBox.value = '';  // Clear the name
+            inputBox.value = '';
         }
 
         function generateSecretSanta() {
@@ -169,24 +182,20 @@
 
             let shuffledNames;
 
-            // Ensure no one is paired with themselves
             do {
                 shuffledNames = shuffleArray([...uniqueNames]);
             } while (shuffledNames.some((name, index) => name === uniqueNames[index]));
 
-            // Create the pairings while maintaining the original order of input names
             const pairs = [];
             for (let i = 0; i < uniqueNames.length; i++) {
-                const giver = uniqueNames[i];  // Keep the original order of names
-                const receiver = shuffledNames[i];  // Pair with the shuffled names
+                const giver = uniqueNames[i];
+                const receiver = shuffledNames[i];
                 pairs.push({ giver, receiver });
             }
 
-            // Clear previous output
             const outputDiv = document.getElementById("output");
             outputDiv.innerHTML = "";
 
-            // Display hidden pairs
             pairs.forEach(pair => {
                 const container = document.createElement("div");
                 container.classList.add("result");
@@ -199,7 +208,7 @@
 
                 revealButton.onclick = () => {
                     hiddenMessage.style.display = "block";
-                    revealButton.disabled = true; // Disable reveal button after click
+                    revealButton.disabled = true;
                 };
 
                 container.appendChild(revealButton);
@@ -207,30 +216,21 @@
                 outputDiv.appendChild(container);
             });
 
-            // Store the result in localStorage
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
-            // Create the link to share the results
             const link = `${window.location.origin}${window.location.pathname}?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
-                // Copy the shareable link to clipboard
-                navigator.clipboard.writeText(link).then(() => {
-                    alert(`Link copied to clipboard: ${link}`);
-                }).catch(err => {
-                    alert("Failed to copy link.");
-                });
+                openShareModal(link);
             };
 
-            // Show the modal
             document.getElementById("secretSantaModal").style.display = "block";
         }
 
-        // Helper function to shuffle the names array
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]]; // Swap elements
+                [array[i], array[j]] = [array[j], array[i]];
             }
             return array;
         }
@@ -243,7 +243,6 @@
             });
         }
 
-        // Function to show results for a given ID
         function showPreviousResults(id) {
             const pairs = JSON.parse(localStorage.getItem(id));
             if (!pairs) {
@@ -266,13 +265,29 @@
 
                 revealButton.onclick = () => {
                     hiddenMessage.style.display = "block";
-                    revealButton.disabled = true; // Disable reveal button after click
+                    revealButton.disabled = true;
                 };
 
                 container.appendChild(revealButton);
                 container.appendChild(hiddenMessage);
                 outputDiv.appendChild(container);
             });
+        }
+
+        function openShareModal(link) {
+            document.getElementById("shareLinkInput").value = link;
+            document.getElementById("shareModal").style.display = "block";
+        }
+
+        function closeShareModal() {
+            document.getElementById("shareModal").style.display = "none";
+        }
+
+        function copyLink() {
+            const copyText = document.getElementById("shareLinkInput");
+            copyText.select();
+            document.execCommand("copy");
+            alert("Link copied to clipboard!");
         }
 
         function resetForm() {
