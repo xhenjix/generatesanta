@@ -8,45 +8,47 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
+            padding: 20px;
+        }
+        .result {
+            margin: 10px 0;
         }
         .hidden-message {
             display: none;
-            margin-top: 10px;
-            font-weight: bold;
-            color: green;
+            margin-top: 5px;
         }
-        .result {
-            margin-bottom: 20px;
+        button {
+            padding: 5px 10px;
         }
     </style>
 </head>
 <body>
     <h1>Secret Santa Results</h1>
-    <div id="output">Loading results...</div>
-
+    <div id="output"></div>
     <script>
-        const encodedData = new URLSearchParams(window.location.search).get('data');
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const resultId = params.get("id");
 
-        if (encodedData) {
-            const pairs = JSON.parse(decodeURIComponent(encodedData));
-            const outputDiv = document.getElementById('output');
-            outputDiv.innerHTML = '';
+            if (!resultId) {
+                document.body.innerHTML = "<h2>Invalid or missing result ID!</h2>";
+                return;
+            }
 
+            const pairs = JSON.parse(localStorage.getItem(resultId));
+
+            if (!pairs) {
+                document.body.innerHTML = "<h2>No results found for this ID!</h2>";
+                return;
+            }
+
+            const outputDiv = document.getElementById("output");
             pairs.forEach(pair => {
                 const container = document.createElement("div");
                 container.classList.add("result");
 
                 const revealButton = document.createElement("button");
                 revealButton.textContent = `Reveal Result for ${pair.giver}`;
-                revealButton.classList.add("reveal-button");
-
                 const hiddenMessage = document.createElement("div");
                 hiddenMessage.classList.add("hidden-message");
                 hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
@@ -60,9 +62,7 @@
                 container.appendChild(hiddenMessage);
                 outputDiv.appendChild(container);
             });
-        } else {
-            document.getElementById('output').innerText = "No results found. Please check the link.";
-        }
+        });
     </script>
 </body>
 </html>
