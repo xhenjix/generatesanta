@@ -140,6 +140,7 @@
     </div>
 
     <script>
+        // Function to get the ID from the URL and display previous results
         const urlParams = new URLSearchParams(window.location.search);
         const resultId = urlParams.get('id');
         if (resultId) {
@@ -216,6 +217,7 @@
                 outputDiv.appendChild(container);
             });
 
+            // Store the results in localStorage
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
@@ -245,27 +247,24 @@
 
         function showPreviousResults(id) {
             const pairs = JSON.parse(localStorage.getItem(id));
-            if (!pairs) {
-                alert("No results found for this link.");
-                return;
+            if (pairs) {
+                const outputDiv = document.getElementById("output");
+                outputDiv.innerHTML = "";
+
+                pairs.forEach(pair => {
+                    const container = document.createElement("div");
+                    container.classList.add("result");
+
+                    const hiddenMessage = document.createElement("div");
+                    hiddenMessage.classList.add("hidden-message");
+                    hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
+
+                    container.appendChild(hiddenMessage);
+                    outputDiv.appendChild(container);
+                });
+            } else {
+                alert("No results found for this link!");
             }
-
-            const outputDiv = document.getElementById("output");
-            outputDiv.innerHTML = "";
-
-            pairs.forEach(pair => {
-                const container = document.createElement("div");
-                container.classList.add("result");
-
-                const hiddenMessage = document.createElement("div");
-                hiddenMessage.classList.add("hidden-message");
-                hiddenMessage.textContent = `${pair.giver}, you are giving a gift to ${pair.receiver}! 🎁`;
-
-                container.appendChild(hiddenMessage);
-                outputDiv.appendChild(container);
-            });
-
-            document.getElementById("secretSantaModal").style.display = "block";
         }
 
         function openShareModal(link) {
