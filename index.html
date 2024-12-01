@@ -217,10 +217,11 @@
                 outputDiv.appendChild(container);
             });
 
-            // Store the results in localStorage
+            // Store the results in localStorage with a unique identifier
             const resultId = generateUUID();
             localStorage.setItem(resultId, JSON.stringify(pairs));
 
+            // Create a URL with the resultId to share
             const link = `${window.location.origin}${window.location.pathname}?id=${resultId}`;
             document.getElementById("shareLinkButton").onclick = () => {
                 openShareModal(link);
@@ -266,10 +267,10 @@
             document.getElementById("shareModal").style.display = "none";
         }
 
-        // Show previous results from localStorage
         function showPreviousResults(id) {
             const pairs = JSON.parse(localStorage.getItem(id));
             if (!pairs) return;
+
             const outputDiv = document.getElementById("output");
             outputDiv.innerHTML = "";
 
@@ -292,6 +293,15 @@
                 container.appendChild(hiddenMessage);
                 outputDiv.appendChild(container);
             });
+        }
+
+        function resetForm() {
+            const nameInputs = document.querySelectorAll(".name-input");
+            nameInputs.forEach(input => {
+                input.value = '';
+            });
+            document.getElementById("output").innerHTML = '';
+            localStorage.clear();
         }
     </script>
 </body>
