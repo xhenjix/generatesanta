@@ -53,19 +53,20 @@
             background-color: #45a049;
         }
 
-        .reveal-button {
-            background-color: #2196F3;
-        }
-
-        .reveal-button:hover {
-            background-color: #0b7dda;
-        }
-
-        .hidden-result {
-            display: none;
+        /* Styles for results */
+        .result {
             margin-top: 10px;
-            font-weight: bold;
+        }
+
+        .hidden-message {
+            display: none;
             color: green;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .share-button-container {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -90,27 +91,13 @@
                 const pairs = JSON.parse(resultData);
 
                 const outputDiv = document.getElementById("output");
-                outputDiv.innerHTML = "";  // Clear the "Loading results..." text
+                outputDiv.innerHTML = "<ul>";
 
                 pairs.forEach(pair => {
-                    const container = document.createElement("div");
-                    const revealButton = document.createElement("button");
-                    revealButton.classList.add("reveal-button");
-                    revealButton.textContent = `Reveal result for ${pair.giver}`;
-                    
-                    const hiddenMessage = document.createElement("div");
-                    hiddenMessage.classList.add("hidden-result");
-                    hiddenMessage.textContent = `${pair.giver} gives a gift to ${pair.receiver} 🎁`;
-
-                    revealButton.onclick = function() {
-                        hiddenMessage.style.display = "block"; // Show the hidden message
-                        revealButton.disabled = true; // Disable the reveal button after clicking
-                    };
-
-                    container.appendChild(revealButton);
-                    container.appendChild(hiddenMessage);
-                    outputDiv.appendChild(container);
+                    outputDiv.innerHTML += `<li><strong>${pair.giver}</strong> gives a gift to <strong>${pair.receiver}</strong></li>`;
                 });
+
+                outputDiv.innerHTML += "</ul>";
             } else {
                 document.getElementById("output").textContent = "No results found for this link.";
             }
